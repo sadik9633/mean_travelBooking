@@ -1,5 +1,4 @@
 const mongoose =require('mongoose')
-const { review } = require('./dataService')
 
 mongoose.connect('mongodb://127.0.0.1:27017/travels',{useNewUrlParser:true})
 
@@ -14,16 +13,18 @@ const Tour = mongoose.model('Tour',
     maxGroupSize:Number,
     desc:String,
     reviews: 
-        {
-            name:String,
-            rating:Number
-        },
+        [         
+          {
+            username:String,
+            email:String,
+            review:String,
+            tourId:Number
+        }],
     
     photo:String, 
     featured:String
   }
 )
-
   const User=mongoose.model('User',{
     username:String,
     email:String,
@@ -33,7 +34,7 @@ const Tour = mongoose.model('Tour',
       Email :String,
       PassangerCount :String,
       Date : String,
-      id: Number,
+      tourId: Number,
       title:String,
       city:String,
       address: String,
@@ -43,18 +44,24 @@ const Tour = mongoose.model('Tour',
       desc:String,
       photo:String, 
       featured:String
-    }],
-    review:[{
-       Name:String,
-       Review:String
-
     }]
   })
 
+  const Review=mongoose.model('Review',
+    {tourId:Number,
+      reviews:
+      [{username: String,
+    email: String,
+    date:String,
+    review: String,
+    rating:String,
+    tourId: Number}]
+  }
+  )
 
 
 module.exports = {
-    Tour,User,
+    Tour,User,Review
 }
 
 

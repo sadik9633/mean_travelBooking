@@ -67,7 +67,7 @@ server.post('/newLett',(req,res)=>{
 
 //booking
 server.post('/booking',jwtMiddleware,(req,res)=>{
-    dataService.booking(req.body.fullName,req.body.email,req.body.numOm,req.body.date,req.body.tour).then(result=>{
+    dataService.booking(req.body.fullName,req.body.email,req.body.numOm,req.body.date,req.body.tour,).then(result=>{
         res.status(result.statusCode).json(result)
     })
 })
@@ -81,16 +81,26 @@ res.status(result.statusCode).json(result)
     })
 })
 
-//review
-server.post('/review',jwtMiddleware,(req,res)=>{
-
-     dataService.review(req.body.review,req.body.email,req.body.name).then(result=>{
+server.get('/getreview/:tourId',(req,res)=>{
+    dataService.getreview(req.params.tourId).then(result=>{
         res.status(result.statusCode).json(result)
+    })
+})
+//review
+//server.post('/review',jwtMiddleware,(req,res)=>{
 
-     })
+    // dataService.review(req.body.name,req.body.email,req.body.review,req.body.tour).then(result=>{
+       // res.status(result.statusCode).json(result)
+
+   //  })
+//})
+server.post('/review',jwtMiddleware,(req,res)=>{
+    dataService.review(req.body.name,req.body.email,req.body.date,req.body.review,req.body.rating,req.body.tourId).then(result=>{
+        res.status(result.statusCode).json(result)
+    })
 })
 
- 
+
 //all-tourlist Api
 server.get('/all-tours',(req,res)=>{
 dataService.allTours().then((result)=>{

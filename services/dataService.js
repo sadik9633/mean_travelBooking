@@ -1,3 +1,4 @@
+const  request  = require("express")
 const jwt = require("jsonwebtoken")
 
 const db = require('./db.js')
@@ -59,7 +60,6 @@ const register = (username,email,password) => {
           username:username,
           email:email,
           password:password,
-          review:[{}],
           booking:[]
           
         })
@@ -110,7 +110,7 @@ const  nLett = (email) => {
     //if(acno in userDetails){
     return db.User.findOne({ email }).then(user => {
       if (user) {
-        currentEmail = email
+        
         return {
           status: true,
           message: 'Subscribed',
@@ -140,7 +140,7 @@ return db.User.findOne({email}).then(user=> {
             Email :email,
             PassangerCount : numOm,
             Date : date,
-            id:tour.id,
+            tourId:tour.id,
             title:tour.title,
       city:tour.city,
       address:tour.address,
@@ -163,7 +163,7 @@ return db.User.findOne({email}).then(user=> {
     else{
         return{
             status:false,
-            message: "please register before booking ",
+            message: "please register or login before booking ",
             statusCode:401
         }
     }
@@ -187,34 +187,68 @@ const getbooking = (email) => {
     }
   })
 }
+const getreview=(tourId)=>{
+  return db.Review.findOne({tourId}).then(result=>{
+if(result){
+  
+  return{
+        status: true,
+        statusCode: 200,
+       reviews:result.reviews
+  }
+}else{
+  return {
+    status: false,
+    statusCode: 401,
+    message:"not review yet"
+  }
+} })
+}
+
+
 
 
 //review
-const review = (email,currentUser,Review)=>{
-  return db.User.findOne({email}).then(user=>{
+const review=(username,email,date,review,rating,tourId)=>{
+  return db.Review.findOne({tourId}).then(user =>{
     if(user){
-      user.review.push({
-        Name:currentUser,
-        Review : Review
+      user.reviews.push({
+        username: username,
+        email: email,
+        date:date,
+        review: review,
+        rating:rating,
+        tourId:tourId,
       })
       user.save()
-      return{
-       status:true,
-       statusCode:200,
-       message :"Thank you so much for sharing your experience with us"
+      return {
+        status: true,
+        message: `${username} thank you for sharing your experience you Rated ${rating} out 5`,
+        statusCode: 200
       }
     }else{
-      return{
-        status:false,
-        statusCode:401,
-        message:"your are not authorised"
+      const newReview =new db.Review(
+      {tourId:tourId,
+      
+        reviews:[{
+          username: username,
+        email: email,
+        date:date,
+        review: review,
+        rating:rating,
+        tourId:tourId,
+        }]}
+      )
+      newReview.save()
+      return {
+        status: true,
+        message: `${username} thank you for sharing your experience you Rated ${rating} out 5`,
+        statusCode: 200
       }
     }
   })
 }
 
-
-
 module.exports = {
-   allTours,viewTour,register,login,nLett,booking,review,getbooking
+   allTours,viewTour,register,login,nLett,booking,review,getbooking,getreview,
 }
